@@ -1,4 +1,3 @@
-// backend/routes/auth.js
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -7,6 +6,7 @@ const { jwtSecret } = require("../config");
 
 const router = express.Router();
 
+// Rota para registrar um novo usuário
 router.post("/register", async (req, res) => {
   const { name, email, password, cpf, birthdate } = req.body;
 
@@ -24,19 +24,33 @@ router.post("/register", async (req, res) => {
       birthdate,
     });
 
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
     await user.save();
-    res.status(201).json({ msg: "Usuário registrado com sucesso" });
+
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+
+    jwt.sign(payload, jwtSecret, { expiresIn: "5h" }, (err, token) => {
+      if (err) throw err;
+      res.json({ token });
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Erro no servidor");
   }
 });
 
+// Rota para autenticar um usuário e obter o token
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: "Credenciais inválidas" });
     }
@@ -52,7 +66,7 @@ router.post("/login", async (req, res) => {
       },
     };
 
-    jwt.sign(payload, jwtSecret, { expiresIn: "1h" }, (err, token) => {
+    jwt.sign(payload, jwtSecret, { expiresIn: "5h" }, (err, token) => {
       if (err) throw err;
       res.json({ token });
     });
