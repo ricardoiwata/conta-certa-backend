@@ -4,7 +4,6 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// Rota para obter dados do usuário logado
 router.get("/", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
@@ -15,7 +14,6 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-// Rota para atualizar dados do usuário logado
 router.put("/", auth, async (req, res) => {
   const { name, email, cpf, birthdate } = req.body;
 

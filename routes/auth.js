@@ -6,7 +6,6 @@ const { jwtSecret } = require("../config");
 
 const router = express.Router();
 
-// Rota para registrar um novo usuário
 router.post("/register", async (req, res) => {
   const { name, email, password, cpf, birthdate } = req.body;
 
@@ -45,7 +44,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Rota para autenticar um usuário e obter o token
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
