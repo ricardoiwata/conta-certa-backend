@@ -39,8 +39,8 @@ const Expense = require("./models/Expense");
 
 cron.schedule("0 0 5 * *", async () => {
   try {
-    await Expense.deleteMany({});
-    console.log("Todos os gastos foram zerados.");
+    await Expense.deleteMany({ recurring: false });
+    console.log("Todos os gastos recorrentes foram zerados.");
 
     await Income.deleteMany({ recurring: false });
     console.log("Todas as rendas não recorrentes foram zeradas.");
